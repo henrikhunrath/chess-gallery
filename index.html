@@ -25,6 +25,13 @@
       padding: 0;
     }
     
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      position: fixed;
+    }
+    
     body {
       margin: 0;
       padding: 0;
@@ -34,8 +41,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
       touch-action: manipulation;
     }
     
@@ -61,7 +66,7 @@
     
     #device {
       width: 100%;
-      height: 100vh;
+      height: 100%;
       max-width: 500px;
       background-color: var(--te-black);
       color: var(--te-light-gray);
@@ -132,14 +137,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100%;
-      width: 100%;
       flex: 1;
+      width: 100%;
       min-height: 0; /* Prevent flex items from overflowing */
+      overflow: hidden;
     }
     
     .timer {
-      height: 50%;
+      flex: 1;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -360,6 +365,9 @@
       gap: 2px;
       background-color: var(--te-gray);
       padding: 2px;
+      min-height: 70px;
+      z-index: 10;
+      position: relative;
     }
     
     .control-btn {
@@ -525,6 +533,7 @@
       transform: rotate(180deg);
     }
     
+    /* Improved media queries for better mobile responsiveness */
     @media (max-width: 500px) {
       .timer-display {
         font-size: 50px; /* Smaller font size for mobile */
@@ -536,6 +545,7 @@
       
       .header {
         padding: 8px 15px; /* Smaller header padding */
+        min-height: 50px;
       }
       
       .model-info, .status-display {
@@ -550,16 +560,17 @@
       /* Ensure the device fits in the viewport */
       #device {
         height: 100%;
-        max-height: 100vh;
+        max-height: 100%;
         display: flex;
         flex-direction: column;
       }
       
-      /* Ensure the timer container takes up available space */
+      /* Ensure the timer container takes up available space but doesn't overflow */
       .timer-container {
         flex: 1;
         display: flex;
         flex-direction: column;
+        max-height: calc(100% - 120px); /* Subtract header and controls height */
       }
       
       /* Ensure each timer takes up exactly half the available space */
@@ -567,11 +578,14 @@
         flex: 1;
         height: auto;
         min-height: 0;
+        max-height: 50%;
       }
       
-      /* Make controls more touch-friendly */
+      /* Make controls more touch-friendly and ensure they're always visible */
       .controls {
         min-height: 70px;
+        height: 70px;
+        flex-shrink: 0;
       }
       
       .control-btn {
@@ -582,6 +596,10 @@
       .settings {
         max-height: 40vh;
         overflow-y: auto;
+        position: absolute;
+        bottom: 70px;
+        width: 100%;
+        z-index: 100;
       }
       
       /* Make rotate button easier to tap */
@@ -630,6 +648,11 @@
         width: 44px;
         height: 44px;
       }
+      
+      /* Further reduce timer container height to ensure controls are visible */
+      .timer-container {
+        max-height: calc(100% - 120px);
+      }
     }
     
     /* Ensure the device rotates properly on all screen sizes */
@@ -639,18 +662,33 @@
       }
       
       .timer-display {
-        font-size: 40px;
+        font-size: 36px;
       }
       
       .controls {
         min-height: 60px;
+        height: 60px;
+      }
+      
+      .header {
+        min-height: 40px;
+        padding: 5px 10px;
+      }
+      
+      /* Further reduce timer container height for very short screens */
+      .timer-container {
+        max-height: calc(100% - 100px);
       }
     }
     
     /* Fix for iOS Safari 100vh issue */
     @supports (-webkit-touch-callout: none) {
-      body, #device {
-        height: -webkit-fill-available;
+      html, body {
+        height: 100%;
+      }
+      
+      #device {
+        height: 100%;
       }
     }
     
