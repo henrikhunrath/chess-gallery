@@ -29,37 +29,47 @@
       margin: 0;
       padding: 0;
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--te-black);
-      color: var(--te-white);
+      background-color: #f0f0f0;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .copyright-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
       height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      overflow: hidden;
+      align-items: center;
+      pointer-events: none;
+      z-index: 1000;
     }
     
     .copyright-logo {
-      margin-bottom: 20px;
-      font-size: 100px;
+      font-size: 18px;
+      color: var(--te-black);
+      margin: 0;
+      padding: 0;
     }
     
-    .chess-gallery {
-      margin-top: 25px;
-      font-size: 24px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
-    
-    .device {
-      width: 90%;
+    #device {
+      width: 100%;
+      height: 100vh;
       max-width: 500px;
       background-color: var(--te-black);
-      border-radius: 12px;
+      color: var(--te-light-gray);
+      border-radius: 0px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
       position: relative;
-      border: 1px solid var(--te-light-gray);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
     }
     
     .header {
@@ -75,10 +85,38 @@
       border-bottom: 3px solid var(--te-black);
     }
     
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+    
+    .copyright-logo {
+      font-size: 18px;
+      color: var(--te-black);
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .model-info, .status-display {
+      width: 33%;
+    }
+    
     .model-info {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      text-align: left;
+      width: 33%;
+    }
+    
+    .status-display {
+      text-align: right;
     }
     
     .model-number {
@@ -97,10 +135,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      height: 100%;
+      width: 100%;
+      flex: 1;
     }
     
     .timer {
-      height: 180px;
+      height: 50%;
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -111,6 +153,8 @@
       transition: all 0.3s ease;
       border-bottom: 1px solid #333;
       overflow: hidden;
+      padding: 20px;
+      box-sizing: border-box;
     }
     
     #player1 {
@@ -167,7 +211,8 @@
       letter-spacing: 2px;
       transition: all 0.2s ease;
       position: relative;
-      z-index: 2;
+      z-index: 3;
+      text-align: center;
     }
     
     .active .timer-display {
@@ -216,10 +261,10 @@
     /* Waveform visualization */
     .waveform {
       position: absolute;
-      bottom: 10px;
+      bottom: 20px;
       left: 0;
       width: 100%;
-      height: 20px;
+      height: 30px;
       display: flex;
       justify-content: center;
       align-items: flex-end;
@@ -263,10 +308,11 @@
     
     .player-info {
       position: absolute;
-      top: 15px;
-      left: 15px;
+      top: 20px;
+      left: 20px;
       display: flex;
       align-items: center;
+      z-index: 2;
     }
     
     .player-dot {
@@ -454,8 +500,9 @@
     
     .rotate-container {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 20px;
+      right: 20px;
+      z-index: 3;
     }
     
     .rotate-btn {
@@ -491,14 +538,17 @@
     /* Circular progress indicator */
     .circular-progress {
       position: absolute;
-      width: 180px;
-      height: 180px;
-      top: 0;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      z-index: 1;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      z-index: 2;
       opacity: 0;
       transition: opacity 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     .timer.active .circular-progress {
@@ -506,6 +556,10 @@
     }
     
     .progress-ring {
+      width: 90%;
+      height: 90%;
+      max-width: 300px;
+      max-height: 300px;
       transform: rotate(-90deg);
       transform-origin: center;
     }
@@ -630,37 +684,14 @@
       opacity: 0.7;
     }
     
-    .data-dot {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background-color: var(--te-yellow);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 0.7;
-      }
-      50% {
-        transform: scale(1.5);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0.7;
-      }
-    }
-    
     /* Countdown circle animation */
     .countdown-circle {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
       z-index: 1;
       opacity: 0;
       transition: opacity 0.5s ease;
@@ -685,20 +716,42 @@
         stroke-dashoffset: 0;
       }
     }
+    
+    /* Make visualization elements cover the entire timer area */
+    .grid-overlay,
+    .holographic-lines,
+    .particles,
+    .data-dots,
+    .countdown-circle {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Ensure the timer takes up exactly half the screen */
+    #player1, #player2 {
+      height: 50%;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <div class="copyright-logo">©</div>
-  
-  <div class="device" id="device">
+  <div id="device">
     <div class="header">
-      <div class="model-info">
-        <div class="model-number">A1-01</div>
-        <div class="logo">POCKET CHESS CLOCK</div>
-      </div>
-      <div class="status-display">
-        <span class="status-icon"></span>
-        <span id="game-status">STANDBY</span>
+      <div class="header-content">
+        <div class="model-info">
+          <div class="model-number">A1-01</div>
+          <div class="logo">POCKET CHESS CLOCK</div>
+        </div>
+        
+        <div class="copyright-logo">©</div>
+        
+        <div class="status-display">
+          <span class="status-icon"></span>
+          <span id="game-status">STANDBY</span>
+        </div>
       </div>
     </div>
     
@@ -716,13 +769,13 @@
         <div class="particles" id="particles1"></div>
         <div class="data-dots" id="data-dots1"></div>
         <div class="circular-progress">
-          <svg class="progress-ring" width="180" height="180">
+          <svg class="progress-ring" width="100%" height="100%" viewBox="0 0 180 180">
             <circle class="progress-ring-circle" cx="90" cy="90" r="80" />
           </svg>
         </div>
         <div class="countdown-circle">
-          <svg width="100%" height="100%">
-            <circle class="circle-animation" cx="50%" cy="50%" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
+          <svg width="100%" height="100%" viewBox="0 0 100 100">
+            <circle class="circle-animation" cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
           </svg>
         </div>
         <div class="waveform">
@@ -750,13 +803,13 @@
         <div class="particles" id="particles2"></div>
         <div class="data-dots" id="data-dots2"></div>
         <div class="circular-progress">
-          <svg class="progress-ring" width="180" height="180">
+          <svg class="progress-ring" width="100%" height="100%" viewBox="0 0 180 180">
             <circle class="progress-ring-circle" cx="90" cy="90" r="80" />
           </svg>
         </div>
         <div class="countdown-circle">
-          <svg width="100%" height="100%">
-            <circle class="circle-animation" cx="50%" cy="50%" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
+          <svg width="100%" height="100%" viewBox="0 0 100 100">
+            <circle class="circle-animation" cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
           </svg>
         </div>
         <div class="waveform">
@@ -774,6 +827,7 @@
         <div id="timer2" class="timer-display">10:00</div>
       </div>
     </div>
+    
     
     <div class="controls">
       <button id="start-btn" class="control-btn">
@@ -819,8 +873,6 @@
       </div>
     </div>
   </div>
-  
-  <div class="chess-gallery">CHESS GALLERY</div>
 
   <script>
     // DOM elements
