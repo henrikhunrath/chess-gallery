@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TE-01 CHESS CLOCK</title>
+  <style>
+    @font-face {
+      font-family: 'Digital';
+      src: url('https://cdnjs.cloudflare.com/ajax/libs/digital-clock-font/1.0.0/digital-7.ttf');
+    }
+    
+    :root {
+      --te-yellow: #ffff00;
+      --te-black: #000000;
+      --te-white: #ffffff;
+      --te-gray: #222222;
+      --te-light-gray: #aaaaaa;
+      --te-orange: #ff6b00;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--te-gray);
+      color: var(--te-white);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .copyright-logo {
+      margin-bottom: 15px;
+      font-size: 28px;
+    }
+    
+    .chess-gallery {
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    
+    .device {
+      width: 90%;
+      max-width: 500px;
+      background-color: var(--te-black);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      position: relative;
+      border: 1px solid var(--te-light-gray);
+    }
+    
+    .header {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+      font-size: 14px;
+      border-bottom: 3px solid var(--te-black);
+    }
+    
+    .model-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .model-number {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .logo {
+      letter-spacing: 0px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    
+    .timer-container {
+      position: relative;
+    }
+    
+    .timer {
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid #333;
+    }
+    
+    .player-info {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .player-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .player-name {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+    
+    .timer-display {
+      font-family: 'Digital', monospace;
+      font-size: 72px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      transition: all 0.2s ease;
+    }
+    
+    .active {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+    }
+    
+    .inactive {
+      background-color: var(--te-black);
+      color: var(--te-light-gray);
+    }
+    
+    .active .player-dot {
+      background-color: var(--te-black);
+      box-shadow: 0 0 10px var(--te-black);
+    }
+    
+    .inactive .player-dot {
+      background-color: var(--te-light-gray);
+    }
+    
+    .divider {
+      height: 3px;
+      background-color: var(--te-yellow);
+      width: 70%;
+      margin: 0 auto;
+    }
+    
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background-color: var(--te-gray);
+      padding: 2px;
+    }
+    
+    .control-btn {
+      background-color: #111;
+      color: var(--te-light-gray);
+      border: none;
+      padding: 15px 0;
+      font-size: 11px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .control-btn:hover {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+    }
+    
+    .control-btn.active-btn {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+    }
+    
+    .settings {
+      background-color: var(--te-black);
+      padding: 20px;
+      display: none;
+    }
+    
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+    }
+    
+    .setting-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .setting-value {
+      display: flex;
+      align-items: center;
+    }
+    
+    .setting-btn {
+      background-color: #111;
+      color: var(--te-white);
+      border: none;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    .setting-btn:hover {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+    }
+    
+    .setting-display {
+      width: 60px;
+      text-align: center;
+      font-family: 'Digital', monospace;
+      font-size: 20px;
+      padding: 0 10px;
+    }
+    
+    .status-icon {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      animation: blink 1s infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+    
+    .game-stopped .status-icon {
+      background-color: var(--te-orange);
+      animation: none;
+      opacity: 1;
+    }
+    
+    .game-running .status-icon {
+      background-color: var(--te-yellow);
+    }
+    
+    .game-paused .status-icon {
+      background-color: var(--te-light-gray);
+      animation: none;
+    }
+    
+    .status-display {
+      display: flex;
+      align-items: center;
+    }
+    
+    .control-icon {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    .tenths {
+      font-size: 36px;
+      vertical-align: super;
+    }
+    
+    .lowtime {
+      color: var(--te-orange);
+    }
+    
+    .etched-text {
+      text-shadow: 
+        -1px -1px 0 rgba(0,0,0,0.7),
+        1px -1px 0 rgba(0,0,0,0.7),
+        -1px 1px 0 rgba(0,0,0,0.7),
+        1px 1px 0 rgba(0,0,0,0.7);
+    }
+    
+    .rotate-container {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+    
+    .rotate-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    
+    .rotate-btn:hover {
+      opacity: 1;
+    }
+    
+    .rotated {
+      transform: rotate(180deg);
+    }
+    
+    @media (max-width: 500px) {
+      .timer-display {
+        font-size: 60px;
+      }
+      
+      .timer {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="copyright-logo">©</div>
+  
+  <div class="device" id="device">
+    <div class="header">
+      <div class="model-info">
+        <div class="model-number">TE-01</div>
+        <div class="logo">POCKET CHESS CLOCK</div>
+      </div>
+      <div class="status-display">
+        <span class="status-icon"></span>
+        <span id="game-status">STANDBY</span>
+      </div>
+    </div>
+    
+    <div class="timer-container">
+      <div id="player1" class="timer inactive">
+        <div class="player-info">
+          <div class="player-dot"></div>
+          <div class="player-name">BLACK</div>
+        </div>
+        <div class="rotate-container">
+          <button class="rotate-btn" id="rotate-btn">⟲</button>
+        </div>
+        <div id="timer1" class="timer-display">10:00</div>
+      </div>
+      
+      <div id="player2" class="timer inactive">
+        <div class="player-info">
+          <div class="player-dot"></div>
+          <div class="player-name">WHITE</div>
+        </div>
+        <div id="timer2" class="timer-display">10:00</div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="start-btn" class="control-btn">
+        <div class="control-icon">▶</div>
+        START
+      </button>
+      <button id="reset-btn" class="control-btn">
+        <div class="control-icon">⟳</div>
+        RESET
+      </button>
+      <button id="settings-btn" class="control-btn">
+        <div class="control-icon">⚙</div>
+        SETUP
+      </button>
+    </div>
+    
+    <div id="settings-panel" class="settings">
+      <div class="setting-row">
+        <div class="setting-label">MAIN TIME</div>
+        <div class="setting-value">
+          <button class="setting-btn" id="time-minus">−</button>
+          <div class="setting-display" id="time-display">10:00</div>
+          <button class="setting-btn" id="time-plus">+</button>
+        </div>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-label">INCREMENT</div>
+        <div class="setting-value">
+          <button class="setting-btn" id="inc-minus">−</button>
+          <div class="setting-display" id="inc-display">0</div>
+          <button class="setting-btn" id="inc-plus">+</button>
+        </div>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-label">MODE</div>
+        <div class="setting-value">
+          <button class="setting-btn" id="mode-minus">◀</button>
+          <div class="setting-display" id="mode-display">STD</div>
+          <button class="setting-btn" id="mode-plus">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="chess-gallery">CHESS GALLERY</div>
+
+  <script>
+    // DOM elements
+    const deviceEl = document.getElementById('device');
+    const player1El = document.getElementById('player1');
+    const player2El = document.getElementById('player2');
+    const timer1El = document.getElementById('timer1');
+    const timer2El = document.getElementById('timer2');
+    const startBtn = document.getElementById('start-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const gameStatus = document.getElementById('game-status');
+    const timeMinusBtn = document.getElementById('time-minus');
+    const timePlusBtn = document.getElementById('time-plus');
+    const timeDisplay = document.getElementById('time-display');
+    const incMinusBtn = document.getElementById('inc-minus');
+    const incPlusBtn = document.getElementById('inc-plus');
+    const incDisplay = document.getElementById('inc-display');
+    const modeMinusBtn = document.getElementById('mode-minus');
+    const modePlusBtn = document.getElementById('mode-plus');
+    const modeDisplay = document.getElementById('mode-display');
+    const rotateBtn = document.getElementById('rotate-btn');
+    
+    // Game state
+    let gameRunning = false;
+    let gamePaused = false;
+    let activePlayer = null;
+    let player1Time = 600; // in seconds (10 minutes)
+    let player2Time = 600;
+    let increment = 0;
+    let timer;
+    let settingsVisible = false;
+    let deviceRotated = false;
+    let timeOptions = [1, 2, 3, 5, 10, 15, 20, 30, 45, 60, 90];
+    let timeIndex = 4; // 10 minutes
+    let incOptions = [0, 1, 2, 3, 5, 10, 15, 30];
+    let incIndex = 0; // 0 seconds
+    let modeOptions = ['STD', 'BLTZ', 'RPID'];
+    let modeIndex = 0;
+    let warningThreshold = 30; // seconds
+    let criticalThreshold = 10; // seconds
+    
+    // Initialize
+    updateTimerDisplay(timer1El, player1Time);
+    updateTimerDisplay(timer2El, player2Time);
+    updateStatusDisplay();
+    
+    // Event listeners
+    player1El.addEventListener('click', () => handlePlayerClick(1));
+    player2El.addEventListener('click', () => handlePlayerClick(2));
+    startBtn.addEventListener('click', toggleGame);
+    resetBtn.addEventListener('click', resetGame);
+    settingsBtn.addEventListener('click', toggleSettings);
+    timeMinusBtn.addEventListener('click', () => adjustTime(-1));
+    timePlusBtn.addEventListener('click', () => adjustTime(1));
+    incMinusBtn.addEventListener('click', () => adjustIncrement(-1));
+    incPlusBtn.addEventListener('click', () => adjustIncrement(1));
+    modeMinusBtn.addEventListener('click', () => adjustMode(-1));
+    modePlusBtn.addEventListener('click', () => adjustMode(1));
+    rotateBtn.addEventListener('click', rotateDevice);
+    
+    // Functions
+    function toggleGame() {
+      if (gameRunning && !gamePaused) {
+        pauseGame();
+      } else {
+        startGame();
+      }
+    }
+    
+    function startGame() {
+      if ((player1Time <= 0 || player2Time <= 0) && !gamePaused) {
+        resetGame();
+      }
+      
+      gameRunning = true;
+      gamePaused = false;
+      startBtn.innerHTML = '<div class="control-icon">⏸</div>PAUSE';
+      startBtn.classList.add('active-btn');
+      updateStatusDisplay();
+      
+      if (!activePlayer) {
+        // First start, Player 2 (WHITE) goes first in chess
+        activePlayer = 2;
+        player2El.classList.remove('inactive');
+        player2El.classList.add('active');
+        player1El.classList.add('inactive');
+        player1El.classList.remove('active');
+      }
+      
+      timer = setInterval(updateTime, 100);
+    }
+    
+    function pauseGame() {
+      gameRunning = true;
+      gamePaused = true;
+      clearInterval(timer);
+      startBtn.innerHTML = '<div class="control-icon">▶</div>RESUME';
+      startBtn.classList.remove('active-btn');
+      updateStatusDisplay();
+    }
+    
+    function resetGame() {
+      clearInterval(timer);
+      gameRunning = false;
+      gamePaused = false;
+      startBtn.innerHTML = '<div class="control-icon">▶</div>START';
+      startBtn.classList.remove('active-btn');
+      updateStatusDisplay();
+      
+      player1Time = timeOptions[timeIndex] * 60;
+      player2Time = timeOptions[timeIndex] * 60;
+      updateTimerDisplay(timer1El, player1Time);
+      updateTimerDisplay(timer2El, player2Time);
+      
+      activePlayer = null;
+      player1El.classList.remove('active');
+      player1El.classList.add('inactive');
+      player2El.classList.remove('active');
+      player2El.classList.add('inactive');
+    }
+    
+    function handlePlayerClick(player) {
+      if (!gameRunning || gamePaused) return;
+      
+      if (activePlayer && activePlayer !== player) {
+        // Add increment to the player who just finished their move
+        if (activePlayer === 1 && increment > 0) {
+          player1Time += increment;
+          updateTimerDisplay(timer1El, player1Time);
+        } else if (activePlayer === 2 && increment > 0) {
+          player2Time += increment;
+          updateTimerDisplay(timer2El, player2Time);
+        }
+        
+        // Play click sound (if we had audio)
+        
+        // Switch active player
+        if (player === 1) {
+          activePlayer = 1;
+          player1El.classList.add('active');
+          player1El.classList.remove('inactive');
+          player2El.classList.add('inactive');
+          player2El.classList.remove('active');
+        } else {
+          activePlayer = 2;
+          player2El.classList.add('active');
+          player2El.classList.remove('inactive');
+          player1El.classList.add('inactive');
+          player1El.classList.remove('active');
+        }
+      }
+    }
+    
+    function updateTime() {
+      if (activePlayer === 1) {
+        player1Time -= 0.1;
+        if (player1Time <= 0) {
+          player1Time = 0;
+          endGame("WHITE WINS");
+        }
+        updateTimerDisplay(timer1El, player1Time);
+      } else if (activePlayer === 2) {
+        player2Time -= 0.1;
+        if (player2Time <= 0) {
+          player2Time = 0;
+          endGame("BLACK WINS");
+        }
+        updateTimerDisplay(timer2El, player2Time);
+      }
+    }
+    
+    function endGame(message) {
+      clearInterval(timer);
+      gameRunning = false;
+      gamePaused = false;
+      gameStatus.textContent = message;
+      startBtn.innerHTML = '<div class="control-icon">▶</div>START';
+      startBtn.classList.remove('active-btn');
+      updateStatusDisplay();
+    }
+    
+    function updateTimerDisplay(element, time) {
+      // Remove any existing classes
+      element.classList.remove('lowtime');
+      
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time % 60);
+      const tenths = Math.floor((time % 1) * 10);
+      
+      // Add warning class for low time
+      if (time <= criticalThreshold) {
+        element.classList.add('lowtime');
+      }
+      
+      if (time < 10) {
+        // Show tenths of a second when under 10 seconds
+        element.innerHTML = `${seconds}<span class="tenths">.${tenths}</span>`;
+      } else if (time < 60) {
+        // Show only seconds when under a minute
+        element.textContent = `${seconds}`;
+      } else {
+        // Show minutes and seconds
+        element.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+    
+    function toggleSettings() {
+      settingsVisible = !settingsVisible;
+      
+      if (settingsVisible) {
+        pauseGame();
+        settingsPanel.style.display = 'block';
+        settingsBtn.classList.add('active-btn');
+        updateSettingsDisplays();
+      } else {
+        settingsPanel.style.display = 'none';
+        settingsBtn.classList.remove('active-btn');
+      }
+    }
+    
+    function adjustTime(direction) {
+      timeIndex = Math.max(0, Math.min(timeOptions.length - 1, timeIndex + direction));
+      const minutes = timeOptions[timeIndex];
+      timeDisplay.textContent = minutes < 60 ? `${minutes}:00` : `${minutes/60}h`;
+      
+      // Only update times if game hasn't started
+      if (!gameRunning) {
+        player1Time = minutes * 60;
+        player2Time = minutes * 60;
+        updateTimerDisplay(timer1El, player1Time);
+        updateTimerDisplay(timer2El, player2Time);
+      }
+    }
+    
+    function adjustIncrement(direction) {
+      incIndex = Math.max(0, Math.min(incOptions.length - 1, incIndex + direction));
+      increment = incOptions[incIndex];
+      incDisplay.textContent = increment;
+    }
+    
+    function adjustMode(direction) {
+      modeIndex = Math.max(0, Math.min(modeOptions.length - 1, modeIndex + direction));
+      const mode = modeOptions[modeIndex];
+      modeDisplay.textContent = mode;
+      
+      // Adjust time presets based on mode
+      if (mode === 'BLTZ') {
+        // Blitz preset: 5 minutes
+        timeIndex = 3;
+        incIndex = 0;
+      } else if (mode === 'RPID') {
+        // Rapid preset: 15 minutes
+        timeIndex = 5;
+        incIndex = 2;
+      }
+      
+      updateSettingsDisplays();
+      
+      // Only update times if game hasn't started
+      if (!gameRunning) {
+        player1Time = timeOptions[timeIndex] * 60;
+        player2Time = timeOptions[timeIndex] * 60;
+        increment = incOptions[incIndex];
+        updateTimerDisplay(timer1El, player1Time);
+        updateTimerDisplay(timer2El, player2Time);
+      }
+    }
+    
+    function updateSettingsDisplays() {
+      const minutes = timeOptions[timeIndex];
+      timeDisplay.textContent = minutes < 60 ? `${minutes}:00` : `${minutes/60}h`;
+      incDisplay.textContent = incOptions[incIndex];
+      modeDisplay.textContent = modeOptions[modeIndex];
+    }
+    
+    function updateStatusDisplay() {
+      // Remove existing classes
+      document.body.classList.remove('game-running', 'game-paused', 'game-stopped');
+      
+      if (gameRunning && !gamePaused) {
+        gameStatus.textContent = 'RUNNING';
+        document.body.classList.add('game-running');
+      } else if (gameRunning && gamePaused) {
+        gameStatus.textContent = 'PAUSED';
+        document.body.classList.add('game-paused');
+      } else {
+        gameStatus.textContent = 'STANDBY';
+        document.body.classList.add('game-stopped');
+      }
+    }
+    
+    function rotateDevice() {
+      deviceRotated = !deviceRotated;
+      
+      if (deviceRotated) {
+        deviceEl.classList.add('rotated');
+      } else {
+        deviceEl.classList.remove('rotated');
+      }
+    }
+  </script>
+</body>
+</html>
