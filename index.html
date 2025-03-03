@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TE-01 CHESS CLOCK</title>
+  <title>A1-01 CHESS CLOCK</title>
   <style>
     @font-face {
       font-family: 'Digital';
@@ -29,7 +29,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--te-gray);
+      background-color: var(--te-black);
       color: var(--te-white);
       height: 100vh;
       display: flex;
@@ -40,13 +40,13 @@
     }
     
     .copyright-logo {
-      margin-bottom: 15px;
-      font-size: 28px;
+      margin-bottom: 20px;
+      font-size: 100px;
     }
     
     .chess-gallery {
-      margin-top: 15px;
-      font-size: 16px;
+      margin-top: 25px;
+      font-size: 24px;
       font-weight: bold;
       letter-spacing: 2px;
     }
@@ -94,6 +94,9 @@
     
     .timer-container {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     
     .timer {
@@ -107,7 +110,156 @@
       position: relative;
       transition: all 0.3s ease;
       border-bottom: 1px solid #333;
+      overflow: hidden;
     }
+    
+    #player1 {
+      transform: rotate(180deg);
+    }
+    
+    /* Visualization elements */
+    .timer::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 0, 0.05) 70%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+    }
+    
+    .timer::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      bottom: 0;
+      left: 0;
+      background: linear-gradient(90deg, transparent, var(--te-yellow), transparent);
+      transform: translateX(-100%);
+      opacity: 0;
+      z-index: 1;
+    }
+    
+    .timer.active::before {
+      opacity: 1;
+    }
+    
+    .timer.active::after {
+      opacity: 0.7;
+      animation: scanline 2s linear infinite;
+    }
+    
+    @keyframes scanline {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+    
+    .timer-display {
+      font-family: 'Digital', monospace;
+      font-size: 72px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      transition: all 0.2s ease;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .active .timer-display {
+      text-shadow: 0 0 10px var(--te-yellow), 0 0 20px var(--te-yellow);
+    }
+    
+    /* Pulse animation for active timer */
+    .timer.active {
+      background-color: var(--te-yellow);
+      color: var(--te-black);
+      animation: pulse-bg 4s ease infinite;
+    }
+    
+    @keyframes pulse-bg {
+      0% {
+        background-color: var(--te-yellow);
+      }
+      50% {
+        background-color: rgba(255, 255, 0, 0.85);
+      }
+      100% {
+        background-color: var(--te-yellow);
+      }
+    }
+    
+    /* Grid overlay for active timer */
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .grid-overlay {
+      opacity: 1;
+    }
+    
+    /* Waveform visualization */
+    .waveform {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .waveform {
+      opacity: 0.7;
+    }
+    
+    .wave-bar {
+      width: 3px;
+      background-color: rgba(0, 0, 0, 0.3);
+      margin: 0 2px;
+      height: 5px;
+      animation: wave-animation 1s ease-in-out infinite;
+    }
+    
+    @keyframes wave-animation {
+      0%, 100% {
+        height: 5px;
+      }
+      50% {
+        height: 15px;
+      }
+    }
+    
+    /* Adjust animation delay for each bar */
+    .wave-bar:nth-child(1) { animation-delay: 0.0s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.6s; }
+    .wave-bar:nth-child(8) { animation-delay: 0.7s; }
+    .wave-bar:nth-child(9) { animation-delay: 0.8s; }
+    .wave-bar:nth-child(10) { animation-delay: 0.9s; }
     
     .player-info {
       position: absolute;
@@ -129,14 +281,6 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       opacity: 0.8;
-    }
-    
-    .timer-display {
-      font-family: 'Digital', monospace;
-      font-size: 72px;
-      font-weight: normal;
-      letter-spacing: 2px;
-      transition: all 0.2s ease;
     }
     
     .active {
@@ -341,6 +485,206 @@
         height: 150px;
       }
     }
+    
+    /* Additional futuristic elements */
+    
+    /* Circular progress indicator */
+    .circular-progress {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .circular-progress {
+      opacity: 0.6;
+    }
+    
+    .progress-ring {
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    
+    .progress-ring-circle {
+      stroke: var(--te-yellow);
+      stroke-width: 2;
+      fill: transparent;
+      stroke-dasharray: 502;
+      stroke-dashoffset: 502;
+      transition: stroke-dashoffset 1s linear;
+    }
+    
+    /* Particle system */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .particles {
+      opacity: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      background-color: rgba(255, 255, 0, 0.5);
+      border-radius: 50%;
+      width: 3px;
+      height: 3px;
+      animation: float 3s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(20px);
+        opacity: 0;
+      }
+    }
+    
+    /* Digital glitch effect */
+    @keyframes glitch {
+      0% {
+        transform: translate(0);
+      }
+      20% {
+        transform: translate(-2px, 2px);
+      }
+      40% {
+        transform: translate(-2px, -2px);
+      }
+      60% {
+        transform: translate(2px, 2px);
+      }
+      80% {
+        transform: translate(2px, -2px);
+      }
+      100% {
+        transform: translate(0);
+      }
+    }
+    
+    .timer.active .timer-display {
+      text-shadow: 0 0 10px var(--te-yellow), 0 0 20px var(--te-yellow);
+      animation: glitch 0.5s infinite;
+      animation-play-state: paused;
+    }
+    
+    .timer.active.lowtime .timer-display {
+      animation-play-state: running;
+    }
+    
+    /* Holographic lines */
+    .holographic-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 0, 0.03) 2px,
+        rgba(255, 255, 0, 0.03) 4px
+      );
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .holographic-lines {
+      opacity: 1;
+    }
+    
+    /* Data visualization dots */
+    .data-dots {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .data-dots {
+      opacity: 0.7;
+    }
+    
+    .data-dot {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background-color: var(--te-yellow);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+    }
+    
+    /* Countdown circle animation */
+    .countdown-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .timer.active .countdown-circle {
+      opacity: 0.2;
+    }
+    
+    .circle-animation {
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      animation: countdown 60s linear infinite;
+      transform-origin: center;
+    }
+    
+    @keyframes countdown {
+      0% {
+        stroke-dashoffset: 283;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -349,7 +693,7 @@
   <div class="device" id="device">
     <div class="header">
       <div class="model-info">
-        <div class="model-number">TE-01</div>
+        <div class="model-number">A1-01</div>
         <div class="logo">POCKET CHESS CLOCK</div>
       </div>
       <div class="status-display">
@@ -367,6 +711,32 @@
         <div class="rotate-container">
           <button class="rotate-btn" id="rotate-btn">⟲</button>
         </div>
+        <div class="grid-overlay"></div>
+        <div class="holographic-lines"></div>
+        <div class="particles" id="particles1"></div>
+        <div class="data-dots" id="data-dots1"></div>
+        <div class="circular-progress">
+          <svg class="progress-ring" width="180" height="180">
+            <circle class="progress-ring-circle" cx="90" cy="90" r="80" />
+          </svg>
+        </div>
+        <div class="countdown-circle">
+          <svg width="100%" height="100%">
+            <circle class="circle-animation" cx="50%" cy="50%" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
+          </svg>
+        </div>
+        <div class="waveform">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
         <div id="timer1" class="timer-display">10:00</div>
       </div>
       
@@ -374,6 +744,32 @@
         <div class="player-info">
           <div class="player-dot"></div>
           <div class="player-name">WHITE</div>
+        </div>
+        <div class="grid-overlay"></div>
+        <div class="holographic-lines"></div>
+        <div class="particles" id="particles2"></div>
+        <div class="data-dots" id="data-dots2"></div>
+        <div class="circular-progress">
+          <svg class="progress-ring" width="180" height="180">
+            <circle class="progress-ring-circle" cx="90" cy="90" r="80" />
+          </svg>
+        </div>
+        <div class="countdown-circle">
+          <svg width="100%" height="100%">
+            <circle class="circle-animation" cx="50%" cy="50%" r="45" fill="none" stroke="rgba(255,255,0,0.2)" stroke-width="1" />
+          </svg>
+        </div>
+        <div class="waveform">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
         </div>
         <div id="timer2" class="timer-display">10:00</div>
       </div>
@@ -448,6 +844,11 @@
     const modePlusBtn = document.getElementById('mode-plus');
     const modeDisplay = document.getElementById('mode-display');
     const rotateBtn = document.getElementById('rotate-btn');
+    const particles1 = document.getElementById('particles1');
+    const particles2 = document.getElementById('particles2');
+    const dataDots1 = document.getElementById('data-dots1');
+    const dataDots2 = document.getElementById('data-dots2');
+    const progressRingCircles = document.querySelectorAll('.progress-ring-circle');
     
     // Game state
     let gameRunning = false;
@@ -472,6 +873,8 @@
     updateTimerDisplay(timer1El, player1Time);
     updateTimerDisplay(timer2El, player2Time);
     updateStatusDisplay();
+    createParticles();
+    createDataDots();
     
     // Event listeners
     player1El.addEventListener('click', () => handlePlayerClick(1));
@@ -588,6 +991,7 @@
           endGame("WHITE WINS");
         }
         updateTimerDisplay(timer1El, player1Time);
+        updateProgressRing(0, player1Time);
       } else if (activePlayer === 2) {
         player2Time -= 0.1;
         if (player2Time <= 0) {
@@ -595,7 +999,15 @@
           endGame("BLACK WINS");
         }
         updateTimerDisplay(timer2El, player2Time);
+        updateProgressRing(1, player2Time);
       }
+    }
+    
+    function updateProgressRing(index, time) {
+      const totalTime = timeOptions[timeIndex] * 60;
+      const percentage = time / totalTime;
+      const offset = 502 - (percentage * 502);
+      progressRingCircles[index].style.strokeDashoffset = offset;
     }
     
     function endGame(message) {
@@ -619,6 +1031,9 @@
       // Add warning class for low time
       if (time <= criticalThreshold) {
         element.classList.add('lowtime');
+        element.closest('.timer').classList.add('lowtime');
+      } else {
+        element.closest('.timer').classList.remove('lowtime');
       }
       
       if (time < 10) {
@@ -726,6 +1141,69 @@
       } else {
         deviceEl.classList.remove('rotated');
       }
+    }
+    
+    // Create particles for visual effect
+    function createParticles() {
+      for (let i = 0; i < 15; i++) {
+        createParticle(particles1);
+        createParticle(particles2);
+      }
+    }
+    
+    function createParticle(container) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      // Random position
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      particle.style.left = `${x}%`;
+      particle.style.bottom = `${y}%`;
+      
+      // Random size
+      const size = Math.random() * 3 + 1;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      
+      // Random animation duration
+      const duration = Math.random() * 3 + 2;
+      particle.style.animationDuration = `${duration}s`;
+      
+      // Random animation delay
+      const delay = Math.random() * 5;
+      particle.style.animationDelay = `${delay}s`;
+      
+      container.appendChild(particle);
+    }
+    
+    // Create data dots for visual effect
+    function createDataDots() {
+      for (let i = 0; i < 20; i++) {
+        createDataDot(dataDots1);
+        createDataDot(dataDots2);
+      }
+    }
+    
+    function createDataDot(container) {
+      const dot = document.createElement('div');
+      dot.classList.add('data-dot');
+      
+      // Random position
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      dot.style.left = `${x}%`;
+      dot.style.top = `${y}%`;
+      
+      // Random animation duration
+      const duration = Math.random() * 2 + 1;
+      dot.style.animationDuration = `${duration}s`;
+      
+      // Random animation delay
+      const delay = Math.random() * 2;
+      dot.style.animationDelay = `${delay}s`;
+      
+      container.appendChild(dot);
     }
   </script>
 </body>
