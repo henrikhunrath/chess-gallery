@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Theme color for browser UI elements -->
+  <meta name="theme-color" content="#ffff00">
+  <!-- iOS specific status bar styling -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>A1-01 CHESS CLOCK</title>
   <style>
     @font-face {
@@ -89,6 +94,10 @@
       letter-spacing: 2px;
       font-size: 14px;
       border-bottom: 3px solid var(--te-black);
+      padding-top: max(10px, env(safe-area-inset-top));
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
     .header-content {
@@ -900,10 +909,15 @@
       height: 50%;
       width: 100%;
     }
+    
+    /* Add padding to account for status bar on iOS */
+    .ios-padding {
+      padding-top: env(safe-area-inset-top);
+    }
   </style>
 </head>
 <body>
-  <div id="device">
+  <div id="device" class="ios-padding">
     <div class="header">
       <div class="header-content">
         <div class="model-info">
@@ -1422,6 +1436,17 @@
       
       container.appendChild(dot);
     }
+    
+    // Add iOS detection and padding adjustment
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if device is iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      
+      if (isIOS) {
+        document.body.classList.add('ios-device');
+        document.getElementById('device').classList.add('ios-padding');
+      }
+    });
   </script>
 </body>
 </html>
